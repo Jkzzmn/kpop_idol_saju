@@ -1,6 +1,5 @@
 import streamlit as st
 from datetime import date
-
 from core.prompt_builder import build_saju_prompt
 from core.saju_calculator import get_saju_info
 from core.gemini_client import generate
@@ -8,8 +7,8 @@ from utils.validators import validate_inputs
 
 
 st.set_page_config(page_title="AI 사주 풀이", page_icon="🔮")
-st.title("🔮 AI 사주 풀이")
-st.caption("생년월일 정보를 입력하면 AI가 사주를 분석해드립니다.")
+st.title("Elements AI 사주 풀이")
+st.caption("AI가 사주를 분석해드립니다.")
 
 with st.form("saju_form"):
     name = st.text_input("이름", placeholder="홍길동")
@@ -27,7 +26,7 @@ with st.form("saju_form"):
          "진시(07~09)", "사시(09~11)", "오시(11~13)", "미시(13~15)",
          "신시(15~17)", "유시(17~19)", "술시(19~21)", "해시(21~23)"]
     )
-    submitted = st.form_submit_button("사주 보기 🔮")
+    submitted = st.form_submit_button("사주 풀이")
 
 if submitted:
     birth_date_str = birth_date.strftime("%Y-%m-%d")
