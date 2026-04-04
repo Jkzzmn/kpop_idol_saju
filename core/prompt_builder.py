@@ -1,29 +1,54 @@
-def build_saju_prompt(name: str, birth_date: str, gender: str, birth_time: str = None) -> str:
-    time_info = f"태어난 시간: {birth_time}" if birth_time else "태어난 시간: 미입력 (시주 제외하고 분석)"
+import json
+from typing import Dict, Any
 
-    prompt = f"""
-당신은 전문 사주 명리학자입니다. 아래 정보를 바탕으로 사주를 풀이해주세요.
-오행을 기반으로 분석하여 성격, 기질, 운세 등을 상세히 설명해주세요.
 
-[입력 정보]
-- 이름: {name}
-- 생년월일: {birth_date}
-- 성별: {gender}
-- {time_info}
+def build_match_prompt(
+    match_type: str,
+    my_profile: Dict[str, Any],
+    partner_profile: Dict[str, Any],
+    match_result: Dict[str, Any],
+) -> str:
+    if match_type == "친구":
+        focus = "서로 편하게 오래 갈 수 있는 관계 유지법, 갈등을 줄이는 소통 방식, 서로의 부족한 오행을 어떻게 보완해줄 수 있는지"
+    elif match_type == "연인":
+        focus = "더 잘 만나기 위한 방법, 감정 표현 방식, 연애에서 부딪히기 쉬운 지점과 관계를 안정적으로 유지하는 법"
+    else:
+        focus = "이 아이돌에게 끌리는 이유, 팬으로서 정서적으로 잘 맞는 포인트, 내가 어떤 오행을 보완하면 더 즐겁고 건강하게 덕질할 수 있는지"
 
-[풀이 항목]
-1. 사주 기본 구성 (년주, 월주, 일주, 시주 - 시간 없을 경우 시주 생략)
-2. 오행 분석 (강한 오행, 약한 오행)
-3. 전반적인 성격과 기질
-4. 올해 (2026년) 운세
-5. 주의할 점 및 조언
+    payload = {
+        "match_type": match_type,
+        "me": my_profile,
+        "partner": partner_profile,
+        "match_result": match_result,
+    }
 
-[출력 방식] - 각 번호에 대해서 *로 구분하여 설명해주세요.
-1.기본 사주에 대한 내용을 간결하게 설명해주세요.
-2.오행 분석은 다섯가지 항목에 대해 1~5점으로 평가해주세요. (1점: 매우 약함, 5점: 매우 강함)
-ex) 목: 3점, 화: 5점, 토: 2점, 금: 4점, 수: 1점
-3.성격과 기질은 구체적인 예시와 함께 설명해주세요.
-4.운세는 올해의 전반적인 흐름과 주의할 점을 포함하여 설명해주세요.
-5.어떤 굿즈(키링)이 필요할지에 대한 내용을 작성해주세요.
-"""
-    return prompt.strip()
+    return f"""
+너는 사주와 관계 해석에 능한 전문 해설가다.
+
+아래 데이터는 이미 코드로 계산 완료된 값이다.
+절대 다시 계산하지 말고, 제공된 값만 사용해서 해석하라.
+천간, 지지, 오행, 십신 값을 바꾸거나 추정하지 마라.
+
+[계산 데이터]
+{json.dumps(payload, ensure_ascii=False, indent=2)}
+
+[해석 초점]
+{focus}
+
+[응답 규칙]
+- 반드시 JSON으로만 응답
+- 코드블록 사용 금지
+- 친구/연인/아이돌 관계 유형에 맞는 말만 할 것
+- 과장하지 말고 구체적으로 설명할 것
+- 상대를 비난하는 표현 금지
+- 실천 가능한 조언 포함
+
+[반환 형식]
+{{
+  "summary": "관계 전체 요약 2~4문장",
+  "chemistry": "왜 잘 맞거나 부딪히는지 설명 3~5문장",
+  "my_lacking_elements_comment": "나에게 부족한 오행과 보완 방향 설명 2~4문장",
+  "partner_lacking_elements_comment": "상대에게 부족한 오행 설명 2~4문장. 단, 아이돌이면 팬 관점으로 짧게 작성",
+  "relationship_tip": "관계를 더 좋게 만드는 실천 팁 3~5문장"
+}}
+""".strip()
