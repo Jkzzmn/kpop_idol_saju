@@ -2,4 +2,5 @@ google-genai
 python-dotenv
 streamlit
 sajupy
-padas
+pandas
+numpy
